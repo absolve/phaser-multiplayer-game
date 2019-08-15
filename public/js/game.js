@@ -1,8 +1,13 @@
 /* global Phaser RemotePlayer io */
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render })
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+  preload: preload,
+  create: create,
+  update: update,
+  render: render
+})
 
-function preload () {
+function preload() {
   game.load.image('earth', 'assets/light_sand.png')
   game.load.spritesheet('dude', 'assets/dude.png', 64, 64)
   game.load.spritesheet('enemy', 'assets/dude.png', 64, 64)
@@ -17,9 +22,9 @@ var player
 var enemies
 
 var currentSpeed = 0
-var cursors
+var cursors //光标
 
-function create () {
+function create() {
   socket = io.connect()
 
   // Resize our game world to be a 2000 x 2000 square
@@ -76,7 +81,7 @@ var setEventHandlers = function () {
 }
 
 // Socket connected
-function onSocketConnected () {
+function onSocketConnected() {
   console.log('Connected to socket server')
 
   // Reset enemies on reconnect
@@ -86,16 +91,20 @@ function onSocketConnected () {
   enemies = []
 
   // Send local player data to the game server
-  socket.emit('new player', { x: player.x, y: player.y, angle: player.angle })
+  socket.emit('new player', {
+    x: player.x,
+    y: player.y,
+    angle: player.angle
+  })
 }
 
 // Socket disconnected
-function onSocketDisconnect () {
+function onSocketDisconnect() {
   console.log('Disconnected from socket server')
 }
 
 // New player
-function onNewPlayer (data) {
+function onNewPlayer(data) {
   console.log('New player connected:', data.id)
 
   // Avoid possible duplicate players
@@ -110,7 +119,7 @@ function onNewPlayer (data) {
 }
 
 // Move player
-function onMovePlayer (data) {
+function onMovePlayer(data) {
   var movePlayer = playerById(data.id)
 
   // Player not found
@@ -126,7 +135,7 @@ function onMovePlayer (data) {
 }
 
 // Remove player
-function onRemovePlayer (data) {
+function onRemovePlayer(data) {
   var removePlayer = playerById(data.id)
 
   // Player not found
@@ -135,13 +144,13 @@ function onRemovePlayer (data) {
     return
   }
 
-  removePlayer.player.kill()
+  removePlayer.player.kill()  //删除
 
   // Remove player from array
   enemies.splice(enemies.indexOf(removePlayer), 1)
 }
 
-function update () {
+function update() {
   for (var i = 0; i < enemies.length; i++) {
     if (enemies[i].alive) {
       enemies[i].update()
@@ -183,15 +192,19 @@ function update () {
     }
   }
 
-  socket.emit('move player', { x: player.x, y: player.y, angle: player.angle })
+  socket.emit('move player', {
+    x: player.x,
+    y: player.y,
+    angle: player.angle
+  })
 }
 
-function render () {
+function render() {
 
 }
 
 // Find player by ID
-function playerById (id) {
+function playerById(id) {
   for (var i = 0; i < enemies.length; i++) {
     if (enemies[i].player.name === id) {
       return enemies[i]

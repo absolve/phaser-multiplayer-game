@@ -24,7 +24,11 @@ var RemotePlayer = function (index, game, player, startX, startY, startAngle) {
 
   this.player.angle = angle
 
-  this.lastPosition = { x: x, y: y, angle: angle }
+  this.lastPosition = {
+    x: x,
+    y: y,
+    angle: angle
+  }
 }
 
 RemotePlayer.prototype.update = function () {
